@@ -89,6 +89,7 @@ Terminály jsou předdefinované. Jejich seznam je následující:
 	d   - člen/determiner (Příklad: the)
 	n	- číslo (pouze z číslic) Příklady: 12., 12
 	*   - libovolný token
+    q   - část fráze, která se nemá skloňovat (např. New v New York)
 
 Terminálům můžeme přiřazovat atributy. Uvádějí se bezprostředně za terminál do složených závorek. Uvedeme si příklad:
 

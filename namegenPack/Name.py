@@ -60,7 +60,6 @@ class NameMorph(object):
         morph = ""
 
         for i, (wordMorphs, wordType) in enumerate(zip(self.wordsMorphs, self.wordsTypes)):
-
             actMorphsTags = ""
 
             #druh slova jméno, příjmení...
@@ -242,6 +241,7 @@ class Name(object):
         self._language = language
         self._type = None if len(nType) == 0 else nType
         self.additionalInfo = addit
+        self.generated = False
         try:
             # nejprve převedeme a validujeme druh jména
 
@@ -266,7 +266,7 @@ class Name(object):
         """
 
         return Name(str(self), self._orig_language_code, self._language, None if self._type is None else str(self._type),
-                    self.additionalInfo)
+                    self.additionalInfo.copy())
 
     def __str__(self):
         n = ""

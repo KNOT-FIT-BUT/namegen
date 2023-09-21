@@ -3,6 +3,8 @@ S -> !NUMERIC S2
 S -> !ABBRE_MUL	#USA
 S -> !ABBRE_TITLE(t=A) # L.A.
 
+S -> !q{t=jL} 1{c=1,t=jL,g=I}   # první slovo je nesklonná část fráze jako například New v New York
+
 #Volitelná skupina přídavných jmen následovaných nutným podstatným jménem, které může být následováno
 #další volitelnou skupinou přídavných jmen.
 #Příklad: Velké Meziříčí

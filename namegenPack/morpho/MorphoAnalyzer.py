@@ -14,7 +14,7 @@ import string
 from abc import ABC, abstractmethod
 from copy import copy
 from subprocess import Popen, PIPE
-from typing import Set, Dict, Tuple, Optional
+from typing import Set, Dict, Tuple, Optional, List
 
 from namegenPack.morpho.MorphCategories import *
 from ..Errors import ExceptionMessageCode, ErrorMessenger
@@ -479,7 +479,16 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
           ...
           <f>[k2eNgNnPc4d3wH] nejnevětši
           ...
-
+        <s> Karel (cihla)
+          <l>Karla jG
+          <c>k1gFnPc2;jG
+          <f>[k1gFnPc1;jG] Karly
+          <f>[k1gFnPc2;jG] Karel
+          <f>[k1gFnPc3;jG] Karlám
+          ...
+          <d>[1201] Karlin (matčin)
+        Karlin     Karlina    Karlini    Karlino    Karlinou   Karlinu    Karliny
+        Karliných Karliným  Karlinýma Karlinými Karlině
         """
 
         def __init__(self, word):
@@ -493,6 +502,7 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
             self._flags = {Flag.NOT_GENERAL_WORD}  # implicitně se nejedná o obecné slovo
             self._tagRules = []  # značko pravidla pro slovo
             self._morphs = []  # tvary k danému slovu ve formátu dvojic (tagRule, tvar)
+            self._derivations = []  # odvozená slova
 
         @property
         def flags(self):
@@ -807,6 +817,26 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
 
             return values
 
+        def addDerivation(self, derivation, type: Optional[str]):
+            """
+            Přidání odvozeného slova.
+
+            :param derivation: Odvozené slovo.
+            :type derivation: str
+            :param type: Typ odvození.
+            :type type: Optional[str]
+            """
+            self._derivations.append((derivation, type))
+
+        def getDerivations(self) -> List[str]:
+            """
+            Získání odvozených slov.
+
+            :return: Odvozená slova.
+            :rtype: List[str]
+            """
+            return self._derivations
+
         @property
         def rules(self):
             """
@@ -993,6 +1023,16 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
 
             return self._groups
 
+        @property
+        def derivations(self) -> List[str]:
+            """
+            Odvozená slova.
+            """
+            res = []
+            for g in self._groups:
+                res.extend(g.getDerivations())
+            return res
+
         def __str__(self):
             s = ""
             for g in self._groups:
@@ -1038,6 +1078,7 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
             -F vrací všechny možné tvary.
             -m Na výstup se vypíše flektivní analýza zadaného slova.
             -n Přidá poznámku.
+            -D Odvozená slova. (jsou automaticky přidána)
         Výsledek si poté načte a bude sloužit jako databáze, která bude použita pro získávání informací
         o slovech.
 
@@ -1062,6 +1103,18 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
         # získání informací o slovech
         words = list(words)
         self.__commWithMA(words)
+
+        # přidejme slova odvozená
+        derivated = set()
+        for w in self._wordDatabase.values():
+            for g in w.groups:
+                for d, _ in g.getDerivations():
+                    if d not in self._wordDatabase:
+                        derivated.add(d)
+        derivated = list(derivated)
+
+        self.__commWithMA(derivated)
+        words.extend(derivated)
 
         # Rozklad na třídy ekvivalence.
         # Ve formě dict.
@@ -1139,7 +1192,7 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
         :raise MorphoAnalyzerException: Chyba analyzátoru.
         """
 
-        p = Popen([self._pathToMa, "-F", "-m", "-n"], stdin=PIPE, stdout=PIPE, stderr=None)
+        p = Popen([self._pathToMa, "-F", "-m", "-n", "-D"], stdin=PIPE, stdout=PIPE, stderr=None)
 
         output, _ = p.communicate(str.encode(("\n".join(words)) + "\n"))  # vrací stdout a stderr
 
@@ -1242,6 +1295,13 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
                     # všechny <c> řádky.
 
                     actWordGroup.addMorph((parts[0][3:])[1:-1], parts[1], True)
+                elif parts[0][:3] == "<d>":
+                    # přidání odvozeného tvaru slova
+                    t = None
+                    if len(parts[0]) > 3:
+                        t = parts[0][4:-1]
+
+                    actWordGroup.addDerivation(parts[1], t)
 
             except IndexError:
                 raise MorphoAnalyzerException(ErrorMessenger.CODE_MA_CAN_NOT_READ_OUTPUT,

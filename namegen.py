@@ -26,7 +26,7 @@ import namegenPack.morpho.MorphCategories
 import namegenPack.morpho.MorphoAnalyzer
 from namegenPack import Grammar
 from namegenPack.Filters import NamesFilter, NamesGrammarFilter
-from namegenPack.Generators import GenerateAbbreFormOfPrep, GenerateNope
+from namegenPack.Generators import GenerateAbbreFormOfPrep, GenerateNope, GenerateDerivatedForms, MultiGenerator
 from namegenPack.Language import Language
 from namegenPack.Name import *
 
@@ -158,7 +158,9 @@ class ConfigManager(object):
         result = {
             "ABBRE_FORM_OF_PREPOSITIONS":
                 self.configParser[self.sectionGenerators]["ABBRE_FORM_OF_PREPOSITIONS"].lower() == "true",
-            "ABBRE_FORM_OF_PREPOSITIONS_USE_ON": set()
+            "ABBRE_FORM_OF_PREPOSITIONS_USE_ON": set(),
+            "GENERATE_DERIV_NAMES": self.configParser[self.sectionGenerators]["GENERATE_DERIV_NAMES"].lower() == "true",
+            "GENERATE_DERIV_NAMES_TYPES": None if self.configParser[self.sectionGenerators]["GENERATE_DERIV_NAMES_TYPES"] is None else set(self.configParser[self.sectionGenerators]["GENERATE_DERIV_NAMES_TYPES"].split()),
         }
 
         for nameT in self.configParser[self.sectionGenerators]["ABBRE_FORM_OF_PREPOSITIONS_USE_ON"].split():
@@ -479,6 +481,8 @@ def equGen(names: List[Name], languages: Dict[str, Language]) -> List[Name]:
                     newName.words[wordsOffset] = Word(words[(variantOffset // lastPeriod) % len(words)], newName,
                                                       wordsOffset)
                     lastPeriod *= len(words)
+
+                newName.generated = True
                 generatedNames.append(newName)
 
     return generatedNames
@@ -706,9 +710,17 @@ def main():
 
         # Inicializace generátorů.
         # Je to dělané jako funktor, aby to bylo do budoucna případně snadněji rozšířitelné. Podobně jako filtry.
-        generateNewNames = \
-            GenerateAbbreFormOfPrep(configAll[configManager.sectionGenerators]["ABBRE_FORM_OF_PREPOSITIONS_USE_ON"]) \
-                if configAll[configManager.sectionGenerators]["ABBRE_FORM_OF_PREPOSITIONS"] else GenerateNope()
+        generators = []
+
+        if configAll[configManager.sectionGenerators]["ABBRE_FORM_OF_PREPOSITIONS"]:
+            generators.append(
+                GenerateAbbreFormOfPrep(configAll[configManager.sectionGenerators]["ABBRE_FORM_OF_PREPOSITIONS_USE_ON"])
+            )
+
+        if configAll[configManager.sectionGenerators]["GENERATE_DERIV_NAMES"]:
+            generators.append(GenerateDerivatedForms(configAll[configManager.sectionGenerators]["GENERATE_DERIV_NAMES_TYPES"]))
+
+        generateNewNames = MultiGenerator(generators) if len(generators) > 0 else GenerateNope()
 
         logging.info("čtení jmen")
         # načtení jmen pro zpracování
@@ -724,8 +736,8 @@ def main():
 
         logging.info("Rozgenerování ekvivalentních vstupů")
 
-        equGenerated = equGen(namesR.names, languages)
-        namesR.names = namesR.names + equGenerated  # must to add it here because of the analyzer
+        generatedNames = equGen(namesR.names, languages)
+        namesR.names = namesR.names + generatedNames  # must to add it here because of the analyzer
 
         logging.info("\thotovo")
 
@@ -738,12 +750,13 @@ def main():
 
         logging.info("\thotovo")
 
-        logging.info("Filtrace rozgenerovaných ekvivalentních vstupů")
+        namesR.names = namesR.names[:len(namesR.names) - len(generatedNames)]   # nepotrebujeme jiz egenerovana jmen, protoze jsou v analyze, a pridame je znovu po filtrovani
 
-        namesR.names = namesR.names[:len(namesR.names) - len(equGenerated)]
+        logging.info("Filtrace rozgenerovaných vstupů")
+
         filterGrammar = NamesGrammarFilter()
 
-        for name in equGenerated:
+        for name in generatedNames:
             if filterGrammar(name):
                 # chceme jen ta jména, která jsou v jazyku generovným přislušnou gramatikou
                 namesR.names.append(name)
@@ -955,12 +968,19 @@ def main():
 
                             # vypíšeme všechna jména (generovaná + původní jméno)
                             for nameToWrite, morphsToWrite in [(name, morphs)] + generatedNames:
-
+                                if args.whole and (
+                                        (name.grammar.flexible and len(morphs) < len(Case)) or (
+                                        not name.grammar.flexible and len(morphs) < 1)):
+                                    # Uživatel chce tisknout pouze pokud máme tvary pro všechny pády.
+                                    # je to tu znovu kvuli nove vygenerovanym
+                                    continue
                                 resAdd = str(nameToWrite) + "\t" + str(nameToWrite.language.code) + "\t" + str(
                                     nameToWrite.type) + "\t" + (
                                              "|".join(str(m) for m in morphsToWrite))
                                 if len(nameToWrite.additionalInfo) > 0:
                                     resAdd += "\t" + ("\t".join(nameToWrite.additionalInfo))
+                                if nameToWrite.generated:
+                                    resAdd += "\tG"
                                 completedMorphs.add(resAdd)
                                 if args.verbose:
                                     logging.info(str(nameToWrite) + "\tDerivace:")

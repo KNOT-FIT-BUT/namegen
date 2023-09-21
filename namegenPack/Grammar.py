@@ -205,6 +205,7 @@ class Terminal(object):
         NUMBER = "n"  # číslovka (pouze z číslic) Příklady: 12., 12
         INITIAL_ABBREVIATION = "ia"  # Iniciálová zkratka.
         DETERMINER = "d"  # člen/determiner (Příklad: the)
+        PHRASE = "q"  # část fráze, která se nemá skloňovat (např. New v New York)
         ANY = "*"   # jakýkoliv token
 
         X = "x"  # neznámé
@@ -235,7 +236,7 @@ class Terminal(object):
                 return None
 
     Type.POSTypes = {Type.N, Type.A, Type.P, Type.C, Type.V, Type.D, Type.R, Type.RA, Type.RM, Type.J, Type.T, Type.I,
-                     Type.ABBREVIATION, Type.DETERMINER}
+                     Type.ABBREVIATION, Type.DETERMINER, Type.PHRASE}
     """Typy, které jsou POS"""
 
     Type.toPOSMap = {
@@ -252,7 +253,8 @@ class Terminal(object):
         Type.T: POS.PARTICLE,  # částice
         Type.I: POS.INTERJECTION,  # citoslovce
         Type.ABBREVIATION: POS.ABBREVIATION,  # zkratka
-        Type.DETERMINER: POS.DETERMINER
+        Type.DETERMINER: POS.DETERMINER,
+        Type.PHRASE: POS.PHRASE
 
     }
     """Zobrazení typu do POS."""
@@ -692,6 +694,7 @@ class Token(object):
         # předložkou V
         DEGREE_TITLE = Terminal.Type.DEGREE_TITLE.value  # titul
         INITIAL_ABBREVIATION = Terminal.Type.INITIAL_ABBREVIATION.value  # Iniciálová zkratka. Je třeba zohlednit i
+        PHRASE = Terminal.Type.PHRASE.value # část fráze, která se nemá skloňovat (např. New v New York)
         # analýzu kvůli shodě s některými předložkami.
         EOF = Terminal.Type.EOF.value  # konec vstupu
         X = Terminal.Type.X.value  # neznámé

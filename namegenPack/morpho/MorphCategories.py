@@ -245,6 +245,9 @@ class POS(MorphCategory):
     DETERMINER = "D"
     """člen"""
 
+    PHRASE = "Q"
+    """fráze"""
+
     @staticmethod
     def category():
         return MorphCategories.POS
