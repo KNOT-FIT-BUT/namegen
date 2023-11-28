@@ -5,10 +5,14 @@ S -> 1{t=jB,c=1,n=S,g=M,note=jB,p=1}    # jedná se o jméno, které je v histor
 #číslovku dovolujeme protože chceme i jména jako:
 #	1. Baron z Aucklandu
 S -> SAINT !T_ABBRE_GROUP !MANDATORY_IA_GROUP !NUMERIC NUM(t=jG) AFTER_GIVEN_NAME
-S -> SAINT !T_ABBRE_GROUP !NUMERIC  NUM(t=jG) 1{t=jG,c=1,n=S,g=M,note?=jG,r="^(?!^([sS]vat[ýé]|[sS]aint)$).*$"} AFTER_GIVEN_NAME
+S -> SAINT !T_ABBRE_GROUP !NUMERIC  NUM(t=jG) NOUN_GIVEN_NAME_GROUP AFTER_GIVEN_NAME
 S -> SAINT !T_ABBRE_GROUP !NUMERIC  NUM(t=jG) 2{t=jG,c=1,n=S,g=M,note?=jG,r="^(?!^([sS]vat[ýé]|[sS]aint)$).*$"} AFTER_GIVEN_NAME	#Chceme i indiánská jména: Sedící býk
 SAINT -> 1{t=jT,c=1,n=S,g=M,r="^([sS]vatý|[sS]aint)$"} #Svatý ...
 SAINT -> ε
+
+NOUN_GIVEN_NAME_GROUP -> 1{t=jG,c=1,n=S,g=M,note?=jG,r="^(?!^([sS]vat[ýé]|[sS]aint)$).*$"} NOUN_GIVEN_NAME_GROUP_ENDING
+NOUN_GIVEN_NAME_GROUP_ENDING -> 1{t=jG,c=1,n=S,g=M,note?=jG,l_sep="\S",p=1} NOUN_GIVEN_NAME_GROUP_ENDING
+NOUN_GIVEN_NAME_GROUP_ENDING -> ε
 
 #tento neterminál předpokládá, že předním je právě jedno křestní jméno
 # chceme zachycovat i jména jako: Maria da Assunção Portugalská

@@ -280,6 +280,8 @@ class Terminal(object):
             MATCH_REGEX = "r"  # Slovo samotné sedí na daný regulární výraz. (Speciální atribut)
             PRIORITY = "p"  # Přenastavuje prioritu terminálu (výchozí 0). Ve fázi generování tvarů je možné
             NAME_TYPE = "name_type"  # typ jména (regulární výraz)    (Speciální atribut)
+            LEFT_SEPARATOR = "l_sep"  # levý separátor slova (regulární výraz)    (Speciální atribut)
+            RIGHT_SEPARATOR = "r_sep"  # pravý separátor slova (regulární výraz)    (Speciální atribut)
 
             # filtrovat na základě priority. (Speciální atribut)
 
@@ -386,7 +388,7 @@ class Terminal(object):
                 v = Case.fromLntrf(aV)
             elif cls.Type.NOTE == t:
                 v = Note.fromLntrf(aV)
-            elif cls.Type.NAME_TYPE == t:
+            elif cls.Type.NAME_TYPE == t or cls.Type.LEFT_SEPARATOR == t or cls.Type.RIGHT_SEPARATOR == t:
                 try:
                     v = re.compile(aV[1:-1])  # [1:-1] odstraňujeme " ze začátku a konce
                 except re.error:
@@ -596,6 +598,16 @@ class Terminal(object):
         mr = self.getAttribute(self.Attribute.Type.NAME_TYPE)
         if mr is not None and t.word is not None and not mr.value.match(str(t.word.name.type)):
             # kontrola na regex match druhu jména neprošla
+            return False
+
+        mr = self.getAttribute(self.Attribute.Type.LEFT_SEPARATOR)
+        if mr is not None and t.word is not None and not mr.value.match(str(t.word.leftSeparator)):
+            # kontrola na regex match levého separátoru neprošla
+            return False
+
+        mr = self.getAttribute(self.Attribute.Type.RIGHT_SEPARATOR)
+        if mr is not None and t.word is not None and not mr.value.match(str(t.word.rightSeparator)):
+            # kontrola na regex match pravého separátoru neprošla
             return False
 
         if t.type == Token.Type.ANALYZE_UNKNOWN and \

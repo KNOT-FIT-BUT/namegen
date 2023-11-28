@@ -212,7 +212,7 @@ class Name(object):
         def __str__(self):
             return ":".join("" if x is None else str(x) for x in self.levels)
 
-    def __init__(self, name, orig_language_code: str, language: Language, nType, addit=None, wordDatabase=None):
+    def __init__(self, name, orig_language_code: str, language: Language, nType, addit=None):
         """
         Konstruktor jména.
 
@@ -226,16 +226,11 @@ class Name(object):
         :type nType: str
         :param addit: Přídavné info ke jménu
         :type addit: List
-        :param wordDatabase: Databáze obsahující již vyskytující se slova v předcházejících jménech.
-        :type wordDatabase: Dict[str,Word]
         :raise NameCouldntCreateException: Nelze vytvořit jméno.
         """
 
         if addit is None:
             addit = []
-
-        if wordDatabase is None:
-            wordDatabase = {}
 
         self._orig_language_code = orig_language_code
         self._language = language
@@ -256,7 +251,7 @@ class Name(object):
 
         # rozdělíme jméno na jednotlivá slova a oddělovače
         words, self._separators = self._findWords(name)
-        self._words = [wordDatabase[w] if w in wordDatabase else Word(w, self, offset) for offset, w in enumerate(words)]
+        self._words = [Word(w, self, offset) for offset, w in enumerate(words)]
 
     def copy(self) -> "Name":
         """
@@ -882,7 +877,6 @@ class NameReader(object):
         :param langDef: The default language for unknown.
         """
 
-        wordDatabase = {}  # zde budeme ukládat již vyskytující se slova
         for line in rInput:
             line = line[:-1].lstrip()
             parts = line.split("\t")  # <jméno>\TAB<jazyk>\TAB<typeflag>\TAB<url>
@@ -897,7 +891,6 @@ class NameReader(object):
                 additInfo = []  # přídavné info, například URL odkaď název/jméno pochází
                 if len(parts) > 3:
                     additInfo = parts[3:]
-                # Přidáváme wordDatabase pro ušetření paměti
                 # <jméno>\TAB<jazyk>\TAB<typeflag>\TAB<url>
 
                 lang = langDef if parts[1] == "" else parts[1]
@@ -907,7 +900,7 @@ class NameReader(object):
                 except KeyError:
                     lang = None
 
-                self.names.append(Name(parts[0], parts[1], lang, parts[2], additInfo, wordDatabase))
+                self.names.append(Name(parts[0], parts[1], lang, parts[2], additInfo))
             except Name.NameCouldntCreateException as e:
                 # problém při vytváření jména
                 print(e.message, file=sys.stderr)

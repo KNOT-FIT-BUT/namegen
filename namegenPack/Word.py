@@ -9,7 +9,7 @@ from enum import Enum
 from namegenPack import Errors
 from namegenPack.morpho.MorphoAnalyzer import MorphoAnalyzer, MorphoAnalyze, MorphCategory
 from namegenPack.morpho.MorphCategories import StylisticFlag, Flag
-from typing import Set
+from typing import Set, Optional
 
 
 class WordTypeMark(Enum):
@@ -190,3 +190,21 @@ class Word(object):
 
     def __len__(self):
         return len(self._w)
+
+    @property
+    def leftSeparator(self) -> Optional[str]:
+        """
+        Vrací levý oddělovač.
+
+        :return: Levý oddělovač.
+        """
+        return self.name.separators[self.wordPos - 1] if self.wordPos > 0 else None
+
+    @property
+    def rightSeparator(self) -> Optional[str]:
+        """
+        Vrací pravý oddělovač.
+
+        :return: Pravý oddělovač.
+        """
+        return self.name.separators[self.wordPos] if self.wordPos < len(self.name.separators) else None

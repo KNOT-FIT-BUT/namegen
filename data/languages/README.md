@@ -180,6 +180,12 @@ Možné atributy a jejich hodnoty:
     	
     	Příklad: "P::P:.$"
 
+    l_sep - regulární výraz určující levý separátor
+        Například u jména Adam-Philippe de Custine pro slovo Philippe by byl levý separátor -
+
+    r_sep - regulární výraz určující pravý separátor
+        Například u jména Adam-Philippe de Custine pro slovo Adam by byl pravý separátor -
+
 Je také možné označit atribut jako volitelný pomocí ?. Příklad:
 
     note?=jG
