@@ -10,8 +10,9 @@ S -> SAINT !T_ABBRE_GROUP !NUMERIC  NUM(t=jG) 2{t=jG,c=1,n=S,g=M,note?=jG,r="^(?
 SAINT -> 1{t=jT,c=1,n=S,g=M,r="^([sS]vatý|[sS]aint)$"} #Svatý ...
 SAINT -> ε
 
+#křestní jméno nebo skupina křestních jmen spojených ne-bílým znakem (Adam-Philippe de Custine)
 NOUN_GIVEN_NAME_GROUP -> 1{t=jG,c=1,n=S,g=M,note?=jG,r="^(?!^([sS]vat[ýé]|[sS]aint)$).*$"} NOUN_GIVEN_NAME_GROUP_ENDING
-NOUN_GIVEN_NAME_GROUP_ENDING -> 1{t=jG,c=1,n=S,g=M,note?=jG,l_sep="\S",p=1} NOUN_GIVEN_NAME_GROUP_ENDING
+NOUN_GIVEN_NAME_GROUP_ENDING -> 1{t=jG,c=1,n=S,g=M,note?=jG,l_sep="\S",p=2} NOUN_GIVEN_NAME_GROUP_ENDING # příklad: Adam-Philippe de Custine
 NOUN_GIVEN_NAME_GROUP_ENDING -> ε
 
 #tento neterminál předpokládá, že předním je právě jedno křestní jméno
