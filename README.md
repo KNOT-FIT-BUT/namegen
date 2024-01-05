@@ -147,3 +147,28 @@ Konfigurační soubor se nachází přímo v kořenovém adresáři a jeho náze
 	namegen_config.ini
 	
 Konfigurační soubor obsahuje i popis jednotlivých parametrů.
+
+## Generování odvozených tvarů
+Pro generování odvozených tvarů je nutné použít argument `deriv` a uvést vstupní soubor a cestu k výstupnímu souboru:
+
+        ./namegen.py deriv -o gen.txt example.txt
+
+Na vstupu se očekává stejný formát jako v případě generování tvarů jmen. Na výstupu budou vygenerovány řádky obsahující
+vyskloňované odvozené tvary. Každý odvozený tvar je na vlastním řádku. Řádek je uvozen originálním slovem a záznam obsahuje
+poznámku s druhem relace.
+
+### Příklad
+
+**vstup**
+
+    Ital	cs	P::P:M	https://cs.wikipedia.org/wiki/It%C3%A1lie
+    Shakespeare	cs	P::P:M	https://cs.wikipedia.org/wiki/William_Shakespeare
+
+
+**výstup**
+
+    Ital	cs	P::P:M	Italčin[k2eAgMnSc1d1]#jG|Italčina[k2eAgMnSc2d1]#jG|Italčinu[k2eAgMnSc3d1]#jG|Italčina[k2eAgMnSc4d1]#jG|Italčin[k2eAgMnSc5d1]#jG|Italčinu[k2eAgMnSc6d1]#jG/Italčině[k2eAgMnSc6d1]#jG|Italčiným[k2eAgMnSc7d1]#jG	https://cs.wikipedia.org/wiki/It%C3%A1lie	1201
+    Ital	cs	P::P:M	Italka[k1gFnSc1]#jI|Italky[k1gFnSc2]#jI|Italce[k1gFnSc3]#jI|Italku[k1gFnSc4]#jI|Italko[k1gFnSc5]#jI|Italce[k1gFnSc6]#jI|Italkou[k1gFnSc7]#jI	https://cs.wikipedia.org/wiki/It%C3%A1lie	1102#jN
+    Ital	cs	P::P:M	Italův[k2eAgMnSc1d1]#jG|Italova[k2eAgMnSc2d1]#jG|Italovu[k2eAgMnSc3d1]#jG|Italova[k2eAgMnSc4d1]#jG|Italův[k2eAgMnSc5d1]#jG|Italově[k2eAgMnSc6d1]#jG/Italovu[k2eAgMnSc6d1]#jG|Italovým[k2eAgMnSc7d1]#jG	https://cs.wikipedia.org/wiki/It%C3%A1lie	1201
+    Shakespeare	cs	P::P:M	Shakespearův[k2eAgMnSc1d1]#jG|Shakespearova[k2eAgMnSc2d1]#jG|Shakespearovu[k2eAgMnSc3d1]#jG|Shakespearova[k2eAgMnSc4d1]#jG|Shakespearův[k2eAgMnSc5d1]#jG|Shakespearovu[k2eAgMnSc6d1]#jG/Shakespearově[k2eAgMnSc6d1]#jG|Shakespearovým[k2eAgMnSc7d1]#jG	https://cs.wikipedia.org/wiki/William_Shakespeare	1201
+

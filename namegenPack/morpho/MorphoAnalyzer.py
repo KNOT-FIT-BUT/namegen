@@ -14,7 +14,7 @@ import string
 from abc import ABC, abstractmethod
 from copy import copy
 from subprocess import Popen, PIPE
-from typing import Set, Dict, Tuple, Optional, List
+from typing import Set, Dict, Tuple, Optional, List, Type
 
 from namegenPack.morpho.MorphCategories import *
 from ..Errors import ExceptionMessageCode, ErrorMessenger
@@ -817,13 +817,14 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
 
             return values
 
-        def addDerivation(self, derivation, type: Optional[str]):
+        def addDerivation(self, derivation, type: Optional[Tuple[str, str]]):
             """
             Přidání odvozeného slova.
 
             :param derivation: Odvozené slovo.
             :type derivation: str
             :param type: Typ odvození.
+                type a poznamka
             :type type: Optional[str]
             """
             self._derivations.append((derivation, type))
@@ -1300,6 +1301,12 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
                     t = None
                     if len(parts[0]) > 3:
                         t = parts[0][4:-1]
+
+                        if len(parts) > 3:
+                            # máme i poznámku
+                            t = (t, parts[3])
+                        else:
+                            t = (t, None)
 
                     actWordGroup.addDerivation(parts[1], t)
 

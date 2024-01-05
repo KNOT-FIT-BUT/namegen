@@ -97,15 +97,39 @@ class GenerateDerivatedForms(Generator):
         vygeneruje: Masarykův, Masarykovi, Masaryková
     """
 
-    def __init__(self, allowedDerivTypes: Optional[AbstractSet[str]] = None):
+    def __init__(self, allowedDerivTypes: Optional[AbstractSet[Tuple[str, Optional[str]]]] = None):
         """
         Inicializace generátoru.
 
         :param allowedDerivTypes: Povolené druhy odvozených tvarů. Pokud None tak povolíme všechny.
-        :type allowedDerivTypes: AbstractSet[str]
+            množina dvojic (typ relace, poznamka)
+        :type allowedDerivTypes: Optional[AbstractSet[Tuple[str, Optional[str]]]]
         """
 
-        self.allowedDerivTypes = allowedDerivTypes
+        self.allowedDerivTypes = None
+        if allowedDerivTypes is not None:
+            self.allowedDerivTypes = {relation: note for relation, note in allowedDerivTypes}
+
+    def filterDerivations(self, derivations: List[Tuple[str, Tuple[str, Optional[str]]]]) -> List[Tuple[str, Optional[str]]]:
+        """
+        Vyfiltruje odvozené tvary podle povolených typů.
+        Poznámka je volitelná, ale pokud není None tak se musí shodovat.
+
+        :param derivations: Seznam odvozených tvarů.
+        :type derivations: List[Tuple[str, Tuple[str, Optional[str]]]]
+        :return: Vyfiltrované tvary.
+        """
+        if self.allowedDerivTypes is None:
+            return derivations
+
+        filtered = []
+        for d in derivations:
+            if d[1][0] in self.allowedDerivTypes:
+                note = self.allowedDerivTypes[d[1][0]]
+                if note is None or note == d[1][1]:
+                    filtered.append(d)
+
+        return filtered
 
     def __call__(self, nameMorphs: List[NameMorph]) -> List[Tuple[Name, List[NameMorph]]]:
         """
@@ -118,7 +142,7 @@ class GenerateDerivatedForms(Generator):
         """
 
         generatedNames = []
-        name = nameMorphs[0].forName
+        name: Name = nameMorphs[0].forName
 
         if name.type != Name.Type.MainType.PERSON:
             # jen jména osob
@@ -151,28 +175,18 @@ class GenerateDerivatedForms(Generator):
             return []
 
         derivatedWords = []
-        # vyfiltrujeme pouze jmena a prijmeni
         for g in a.groups:
-            rule = g.rules[0]
-            if MorphCategories.NOTE not in rule:
-                continue
-            note = rule[MorphCategories.NOTE]
-
-            if Note.GIVEN_NAME in note or Note.SURNAME in note:
-                deriv = g.getDerivations()
-
-                if self.allowedDerivTypes is not None:
-                    deriv = [d[0] for d in deriv if d[1] in self.allowedDerivTypes]
-                else:
-                    deriv = [d[0] for d in deriv]
-
-                derivatedWords.extend(deriv)
-
-        for w in derivatedWords:
+            deriv = self.filterDerivations(g.getDerivations())
+            derivatedWords.extend(deriv)
+        for w, d_type in derivatedWords:
             newName = name.copy()
             newName.words[derivate_from] = Word(w, newName, derivate_from)
 
             newName.generated = True
+            note = d_type[0]
+            if d_type[1] is not None:
+                note += "#" + d_type[1]
+            newName.additionalInfo.append(note)   # přidáme informaci o tom, že se jedná o odvozený tvar a jaký
 
             tokens = newName.language.lex.getTokens(newName)
 
@@ -185,9 +199,9 @@ class GenerateDerivatedForms(Generator):
                 try:
                     morphs = newName.genMorphs(derivATokens)
                     generatedNames.append((newName, morphs))
+
                 except Word.WordException:
                     continue
-
         return generatedNames
 
 
