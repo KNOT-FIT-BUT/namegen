@@ -113,6 +113,7 @@ REPEAT_M_PREP_GROUP(p) -> ε
 
 
 !AFTER_PREP -> 1{t=jS} !AFTER_PREP_ENDING
+!AFTER_PREP -> 1{t=jL,note?=jL,p=1} !AFTER_PREP_ENDING
 !AFTER_PREP -> 1{t=H,note=jS,n=P,p=1} !AFTER_PREP_ENDING
 !AFTER_PREP -> 2{t=jS} !AFTER_PREP_ENDING
 !AFTER_PREP -> 4{t=jS} !AFTER_PREP_ENDING
@@ -134,9 +135,9 @@ AFTER_M_PREP_ENDING -> AFTER_M_PREP
 AFTER_M_PREP_ENDING -> ε
 
 #nesklonné M_PREP předpokládá u žen nepřechýlení
-!AFTER_M_PREP -> 1{t=jS,c=1,g=M,r="(?=((?!^(dalla|de|der|da|del|di|dos|el|la|le|van|von|und|ben|bin|y|zu)$).*))(?=(^.*(?<!(ová|cká|ská))$))",note?=jL} !AFTER_M_PREP_ENDING
-!AFTER_M_PREP -> 1{t=jS,c=1,g=I,r="(?=((?!^(dalla|de|der|da|del|di|dos|el|la|le|van|von|und|ben|bin|y|zu)$).*))(?=(^.*(?<!(ová|cká|ská))$))",note?=jL} !AFTER_M_PREP_ENDING
-!AFTER_M_PREP -> 1{t=jS,c=1,g=N,r="(?=((?!^(dalla|de|der|da|del|di|dos|el|la|le|van|von|und|ben|bin|y|zu)$).*))(?=(^.*(?<!(ová|cká|ská))$))",note?=jL} !AFTER_M_PREP_ENDING
+!AFTER_M_PREP -> 1{t=jL,c=1,g=M,r="(?=((?!^(dalla|de|der|da|del|di|dos|el|la|le|van|von|und|ben|bin|y|zu)$).*))(?=(^.*(?<!(ová|cká|ská))$))",note?=jL} !AFTER_M_PREP_ENDING
+!AFTER_M_PREP -> 1{t=jL,c=1,g=I,r="(?=((?!^(dalla|de|der|da|del|di|dos|el|la|le|van|von|und|ben|bin|y|zu)$).*))(?=(^.*(?<!(ová|cká|ská))$))",note?=jL} !AFTER_M_PREP_ENDING
+!AFTER_M_PREP -> 1{t=jL,c=1,g=N,r="(?=((?!^(dalla|de|der|da|del|di|dos|el|la|le|van|von|und|ben|bin|y|zu)$).*))(?=(^.*(?<!(ová|cká|ská))$))",note?=jL} !AFTER_M_PREP_ENDING
 !AFTER_M_PREP -> !r{p=1,t=R} !AFTER_M_PREP_ENDING
 !AFTER_M_PREP -> !ia{p=1,t=I} !AFTER_M_PREP_ENDING
 !AFTER_M_PREP -> !8{t=8} !AFTER_M_PREP_ENDING
