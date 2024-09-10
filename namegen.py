@@ -721,6 +721,8 @@ class GenMorphsPipeline:
     Modularni pipeline pro generovani tvaru jmen.
     """
 
+    NUMBER_OF_TSV_COLUMNS = 6
+
     def __init__(self, args, configAll):
         self.args = args
         self.configAll = configAll
@@ -921,6 +923,12 @@ class GenMorphsPipeline:
                 resAdd += "\t" + ("\t".join(nameToWrite.additionalInfo))
             if nameToWrite.generated:
                 resAdd += "\tG"
+
+            missing = self.NUMBER_OF_TSV_COLUMNS - 4 - len(nameToWrite.additionalInfo) - nameToWrite.generated
+
+            if missing > 0:
+                resAdd += "\t" * missing
+
             completedMorphs.add(resAdd)
             if self.args.verbose:
                 logging.info(str(nameToWrite) + "\tDerivace:")
@@ -1280,6 +1288,8 @@ class GenDerivPipeline(GenMorphsPipeline):
     Modularni pipeline pro generovani odvozených jmen.
     """
 
+    NUMBER_OF_TSV_COLUMNS = 6
+
     def prepareGenerators(self):
         return GenerateDerivatedForms(self.configAll[ConfigManager.sectionDeriv]["GENERATE_DERIV_NAMES_TYPES"])
 
@@ -1296,6 +1306,11 @@ class GenDerivPipeline(GenMorphsPipeline):
                          "|".join(str(m) for m in morphsToWrite))
             if len(nameToWrite.additionalInfo) > 0:
                 resAdd += "\t" + ("\t".join(nameToWrite.additionalInfo))
+
+            # add missing empty fields
+            missing = self.NUMBER_OF_TSV_COLUMNS - 4 - len(nameToWrite.additionalInfo)
+            if missing > 0:
+                resAdd += "\t" * missing
 
             completedMorphs.add(resAdd)
 
