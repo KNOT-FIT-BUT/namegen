@@ -499,6 +499,7 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
             :type word: str
             """
             self._word = word
+            self.lemma = None  # lemma slova
             self._flags = {Flag.NOT_GENERAL_WORD}  # implicitně se nejedná o obecné slovo
             self._tagRules = []  # značko pravidla pro slovo
             self._morphs = []  # tvary k danému slovu ve formátu dvojic (tagRule, tvar)
@@ -1282,6 +1283,7 @@ class MorphoAnalyzerLibma(MorphoAnalyzer):
                         actWordGroup.addTagRule(parts[0][3:])
                 elif parts[0][:3] == "<l>":
                     # lemma slova
+                    actWordGroup.lemma = parts[0][3:]
                     if parts[0][3:][0].islower():
                         # malé první písmeno u lematu
                         # nastavujeme jako obecné slovo

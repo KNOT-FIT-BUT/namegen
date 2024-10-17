@@ -97,18 +97,22 @@ class GenerateDerivatedForms(Generator):
         vygeneruje: Masarykův, Masarykovi, Masaryková
     """
 
-    def __init__(self, allowedDerivTypes: Optional[AbstractSet[Tuple[str, Optional[str]]]] = None):
+    def __init__(self, allowedDerivTypes: Optional[AbstractSet[Tuple[str, Optional[str]]]] = None, lemma_first_letter_capital: bool = False):
         """
         Inicializace generátoru.
 
         :param allowedDerivTypes: Povolené druhy odvozených tvarů. Pokud None tak povolíme všechny.
             množina dvojic (typ relace, poznamka)
         :type allowedDerivTypes: Optional[AbstractSet[Tuple[str, Optional[str]]]]
+        :param lemma_first_letter_capital: Pokud je pravda, tak se bude předpokládat, že lemma musi mít první písmeno velké.
+        :type lemma_first_letter_capital: bool
         """
 
         self.allowedDerivTypes = None
         if allowedDerivTypes is not None:
             self.allowedDerivTypes = {relation: note for relation, note in allowedDerivTypes}
+
+        self.lemma_first_letter_capital = lemma_first_letter_capital
 
     def filterDerivations(self, derivations: List[Tuple[str, Tuple[str, Optional[str]]]]) -> List[Tuple[str, Optional[str]]]:
         """
@@ -176,6 +180,9 @@ class GenerateDerivatedForms(Generator):
 
         derivatedWords = []
         for g in a.groups:
+            if self.lemma_first_letter_capital and not g.lemma[0].isupper():
+                # lemma musi mit prvni pismeno velke
+                continue
             deriv = self.filterDerivations(g.getDerivations())
             derivatedWords.extend(deriv)
         for w, d_type in derivatedWords:

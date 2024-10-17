@@ -1291,7 +1291,10 @@ class GenDerivPipeline(GenMorphsPipeline):
     NUMBER_OF_TSV_COLUMNS = 6
 
     def prepareGenerators(self):
-        return GenerateDerivatedForms(self.configAll[ConfigManager.sectionDeriv]["GENERATE_DERIV_NAMES_TYPES"])
+        return GenerateDerivatedForms(
+            self.configAll[ConfigManager.sectionDeriv]["GENERATE_DERIV_NAMES_TYPES"],
+            True
+        )
 
     def writeMorphs(self, name, morphs, generatedNames, completedMorphs, ru, aT):
         for nameToWrite, morphsToWrite in generatedNames:
