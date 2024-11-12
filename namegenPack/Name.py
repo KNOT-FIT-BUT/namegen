@@ -330,7 +330,7 @@ class Name(object):
         else:
             raise ValueError("Word {} is not in name {}.".format(word, self))
 
-    def printName(self):
+    def printName(self, number_of_columns: int = 6):
         """
         Převede jméno do string. Pokud má jméno nějaké přídavné informace, tak je také přidá.
         Formát: <jméno>\TAB<jazyk>\TAB<typeflag>\TAB\TAB<url>
@@ -346,6 +346,11 @@ class Name(object):
 
         if len(self.additionalInfo) > 0:
             res += ("\t".join(self.additionalInfo))
+
+        missing = number_of_columns - 4 - len(self.additionalInfo)
+
+        if missing > 0:
+            res += "\t" * missing
 
         return res
 

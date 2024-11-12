@@ -895,7 +895,7 @@ class GenMorphsPipeline:
 
             if self.args.include_no_morphs:
                 # uživatel chce vytisknout i slova bez tvarů
-                print(name.printName(), file=self.outF)
+                print(name.printName(self.NUMBER_OF_TSV_COLUMNS), file=self.outF)
             return True
         return False
 
@@ -1066,7 +1066,7 @@ class GenMorphsPipeline:
                 Errors.ErrorMessenger.CODE_UNKNOWN_LANGUAGE).format(str(name)), file=sys.stderr, flush=True)
             if self.args.include_no_morphs:
                 # uživatel chce vytisknout i slova bez tvarů
-                print(name.printName(), file=self.outF)
+                print(name.printName(self.NUMBER_OF_TSV_COLUMNS), file=self.outF)
             return
 
         lang = self.languages[name.language.code]
@@ -1153,7 +1153,7 @@ class GenMorphsPipeline:
 
         if hasattr(self.args, "include_no_morphs") and self.args.include_no_morphs and not morphsPrinted:
             # uživatel chce vytisknout i slova bez tvarů
-            print(name.printName(), file=self.outF)
+            print(name.printName(self.NUMBER_OF_TSV_COLUMNS), file=self.outF)
 
     def writeWordsOfType(self):
         for wordType, pathToWrite in self.writeWordsOfTypeTo.items():
