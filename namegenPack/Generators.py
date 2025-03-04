@@ -205,6 +205,10 @@ class GenerateDerivatedForms(Generator):
             for derivATokens in aTokens:
                 try:
                     morphs = newName.genMorphs(derivATokens)
+                    for morph in morphs:
+                        for i, wT in enumerate(morph.wordsTypes):
+                            morph.wordsTypes[i] = (WordTypeMark.UNKNOWN, wT[1])
+
                     generatedNames.append((newName, morphs))
 
                 except Word.WordException:
