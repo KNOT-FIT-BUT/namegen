@@ -148,10 +148,6 @@ class GenerateDerivatedForms(Generator):
         generatedNames = []
         name: Name = nameMorphs[0].forName
 
-        if name.type != Name.Type.MainType.PERSON:
-            # jen jména osob
-            return []
-
         countableWords = {
             WordTypeMark.GIVEN_NAME, WordTypeMark.SURNAME, WordTypeMark.LOCATION,
             WordTypeMark.EVENT, WordTypeMark.UNIQ_NAME, WordTypeMark.FEMALE_PATRONYM, WordTypeMark.MALE_PATRONYM,
